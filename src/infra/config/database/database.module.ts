@@ -23,11 +23,6 @@ export const getTypeOrmModuleOptions = (
       migrationsDir: 'src/data/migrations',
     },
     ssl: envie.getUseSslDatabase(),
-    extra: {
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    },
   }) as TypeOrmModuleOptions;
 
 @Module({

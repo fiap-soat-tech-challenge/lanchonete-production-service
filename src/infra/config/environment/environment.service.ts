@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from '../../../domain/config/database.interface';
+import { rethrow } from '@nestjs/core/helpers/rethrow';
 
 @Injectable()
 export class EnvironmentService implements DatabaseConfig {
   constructor(private configService: ConfigService) {}
+
+  private getBoolean(strValue: string): boolean {
+    return /^\s*(true|1)\s*$/i.test(strValue);
+  }
 
   getDatabaseHost(): string {
     return this.configService.get<string>('DB_HOST');
@@ -31,10 +36,10 @@ export class EnvironmentService implements DatabaseConfig {
   }
 
   getDatabaseSync(): boolean {
-    return this.configService.get<boolean>('DB_SYNCHRONIZE');
+    return this.getBoolean(this.configService.get<string>('DB_SYNCHRONIZE'));
   }
 
   getUseSslDatabase(): boolean {
-    return this.configService.get<boolean>('DB_SSL');
+    return this.getBoolean(this.configService.get<string>('DB_SSL'));
   }
 }

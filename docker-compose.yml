@@ -23,23 +23,6 @@ services:
     networks:
       - lanchonete_network
 
-  mock_pagamento:
-    build: ./mock_pagamento
-    image: mock_pagamento
-    container_name: lanchonete_pagamento
-    ports:
-      - "3001:3001"
-    env_file:
-      - ./mock_pagamento/.env # for all on docker use .env.docker
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:3001/ping || exit 1
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 15s
-    networks:
-      - lanchonete_network
-
   app:
     build:
       context: .
@@ -51,8 +34,6 @@ services:
     env_file:
       - .env.docker
     depends_on:
-      mock_pagamento:
-        condition: service_healthy
       database:
         condition: service_healthy #inicia o container do app só quando o postgres disser que está healthy
     healthcheck:
