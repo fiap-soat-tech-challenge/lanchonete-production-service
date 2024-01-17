@@ -139,17 +139,6 @@ PostgreSQL, garantindo o desempenho e segurança dos nossos dados.
 
 Nossa modelagem de banco de dados é a seguinte:
 
-![Modelo banco de dados](docs/imagens/modelo_banco_de_dados.jpeg)
-
-<!-- KUBERNETES -->
-## Kubernetes
-
-Os arquivos .yml com todas as instruções de cluster estão no diretório:
-
-```
-|- kubernetes
-```
-
 <!-- ROTEIRO -->
 ## Roteiro
 
