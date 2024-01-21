@@ -22,15 +22,6 @@ export class PedidoRepositoryImpl implements PedidoRepository {
     return PedidoConverter.toPedido(pedidoEntity);
   }
 
-  async findLastCodigo(): Promise<number | null> {
-    const lastPedidoEntity = await this.pedidoRepository.findOne({
-      where: {},
-      order: { id: 'DESC' },
-    });
-    if (lastPedidoEntity === null) return null;
-    return lastPedidoEntity.codigoPedido;
-  }
-
   async insert(pedido: Pedido): Promise<Pedido> {
     const pedidoEntityToInsert = PedidoConverter.toEntity(pedido);
     const pedidoEntity = await this.pedidoRepository.save(pedidoEntityToInsert);

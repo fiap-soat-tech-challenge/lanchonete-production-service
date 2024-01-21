@@ -1,63 +1,39 @@
-import { Cliente } from './cliente';
-import { ItemPedido } from './item-pedido';
 import { Situacao } from './situacao';
 
 export class Pedido {
   private readonly _id: number | null;
-  private readonly _codigoPedido: number;
-  private readonly _cliente: Cliente;
-  private readonly _itensPedido: Array<ItemPedido>;
-  private _precoTotal: number;
+  private readonly _orderId: number;
+  private readonly _precoTotal: number;
   private _situacao: Situacao;
-  private readonly _dataHoraCadastro: Date;
 
-  public constructor(
-    codigoPedido: number,
-    cliente: Cliente,
-    itensPedido: Array<ItemPedido>,
-  );
+  constructor(orderId: number, precoTotal: number);
 
-  public constructor(
+  constructor(
     id: number,
-    codigoPedido: number,
-    cliente: Cliente,
-    itensPedido: Array<ItemPedido>,
+    orderId: number,
     precoTotal: number,
     situacao: Situacao,
-    dataHoraCadastro: Date,
   );
 
   public constructor(...params: any[]) {
-    if (params.length === 3) {
-      this._codigoPedido = params[0];
-      this._cliente = params[1];
-      this._itensPedido = params[2];
-      this._precoTotal = this.getPrecoTotal(params[2]);
+    if (params.length === 2) {
+      this._orderId = params[0];
+      this._precoTotal = params[1];
+      this._situacao = Situacao.RECEBIDO;
       return;
     }
     this._id = params[0];
-    this._codigoPedido = params[1];
-    this._cliente = params[2];
-    this._itensPedido = params[3];
-    this._precoTotal = params[4];
-    this._situacao = params[5];
-    this._dataHoraCadastro = params[6];
+    this._orderId = params[1];
+    this._precoTotal = params[2];
+    this._situacao = params[3];
   }
 
   get id(): number | null {
     return this._id;
   }
 
-  get codigoPedido(): number {
-    return this._codigoPedido;
-  }
-
-  get cliente(): Cliente {
-    return this._cliente;
-  }
-
-  get itensPedido(): Array<ItemPedido> {
-    return this._itensPedido;
+  get orderId(): number {
+    return this._orderId;
   }
 
   get precoTotal(): number {
@@ -68,17 +44,7 @@ export class Pedido {
     return this._situacao;
   }
 
-  set situacao(situacao: Situacao) {
-    this._situacao = situacao;
-  }
-
-  get dataHoraCadastro(): Date {
-    return this._dataHoraCadastro;
-  }
-
-  private getPrecoTotal(itensPedido: Array<ItemPedido>): number {
-    return itensPedido.reduce((valor, item) => {
-      return valor + item.preco;
-    }, 0);
+  set situacao(value: Situacao) {
+    this._situacao = value;
   }
 }
