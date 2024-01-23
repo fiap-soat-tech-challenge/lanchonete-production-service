@@ -24,6 +24,23 @@ export class PedidosController {
   ) {}
 
   @ApiOperation({
+    summary: 'Listagem de pedidos cadastrados',
+    description: 'Retorna a lista de pedidos cadastrados no sistema',
+  })
+  @ApiOkResponse({
+    isArray: true,
+    type: PedidoPresenter,
+  })
+  @Get()
+  async listar(): Promise<Array<PedidoPresenter>> {
+    const allPedidosSorted = await this.pedidoUseCasesUseCaseProxy
+      .getInstance()
+      .getAllPedidosSorted();
+
+    return allPedidosSorted.map((pedido) => new PedidoPresenter(pedido));
+  }
+
+  @ApiOperation({
     summary: 'Status do pedido',
     description: 'Retorna o status de produção do pedido',
   })
