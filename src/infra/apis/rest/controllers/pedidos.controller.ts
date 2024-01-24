@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -12,6 +12,7 @@ import { UseCaseProxy } from '../../../usecases-proxy/use-case-proxy';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
 import { UseCasesProxyModule } from '../../../usecases-proxy/use-cases-proxy.module';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
+import { PedidoDto } from '../dtos/pedido.dto';
 
 @ApiTags('Pedidos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
@@ -22,6 +23,11 @@ export class PedidosController {
     @Inject(UseCasesProxyModule.PEDIDO_USECASES_PROXY)
     private pedidoUseCasesUseCaseProxy: UseCaseProxy<PedidoUseCases>,
   ) {}
+
+  @Post('novo')
+  async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
+    console.log(pedidoDto);
+  }
 
   @ApiOperation({
     summary: 'Listagem de pedidos cadastrados',
@@ -57,7 +63,7 @@ export class PedidosController {
     //   .getInstance()
     //   .getAllPedidosSorted();
     //
-    // return allPedidosSorted.map((pedido) => new PedidoPresenter(pedido));
+    // return allPedidosSorted.map((pedido) => new PedidoDto(pedido));
   }
 
   @ApiOperation({
