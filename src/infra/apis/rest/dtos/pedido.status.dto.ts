@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { Situacao } from '../../../../domain/model/situacao';
+import { Status } from '../../../../domain/model/status';
 
 export class PedidoStatusDto {
-  @ApiProperty()
-  @IsEnum(Situacao, { message: 'O status do pedido não é válido' })
-  readonly status: Situacao;
+  @ApiProperty({
+    enum: Status,
+  })
+  @IsEnum(Status, { message: 'O status do pedido não é válido' })
+  readonly status: Status;
 }

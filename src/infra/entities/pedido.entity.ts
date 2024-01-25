@@ -1,60 +1,46 @@
-import { Situacao } from '../../domain/model/situacao';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { ItemPedidoEntity } from './item-pedido.entity';
-import { ClienteEntity } from './cliente.entity';
+import { Status } from '../../domain/model/status';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'pedidos' })
 export class PedidoEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  codigoPedido: number;
-
-  @ManyToOne(() => ClienteEntity, {
-    nullable: true,
-    onUpdate: 'RESTRICT',
-    eager: true,
-  })
-  cliente: ClienteEntity;
-
-  @OneToMany(() => ItemPedidoEntity, (item) => item.pedido, {
-    cascade: true,
-    eager: true,
-  })
-  itensPedido: Array<ItemPedidoEntity>;
+  @Column({ unique: true })
+  orderId: number;
 
   @Column()
   precoTotal: number;
 
   @Column({
     type: 'enum',
-    enum: Situacao,
-    default: Situacao.RECEBIDO,
+    enum: Status,
+    default: Status.RECEBIDO,
   })
-  situacao: Situacao;
+  situacao: Status;
 
-  @CreateDateColumn()
-  dataHoraCadastro: Date;
+  @Column()
+  codigoPedido: number;
+
+  @Column({ nullable: true })
+  cpfCliente: string;
+
+  @Column('json')
+  itensPedido: Record<string, any>;
 
   constructor(
-    codigoPedido: number,
-    cliente: ClienteEntity,
-    itensPedido: Array<ItemPedidoEntity>,
+    orderId: number,
     precoTotal: number,
-    situacao: Situacao,
+    codigoPedido: number,
+    cpfCliente: string,
+    itensPedido: Record<string, any>,
+    situacao: Status,
   ) {
-    this.codigoPedido = codigoPedido;
-    this.cliente = cliente;
-    this.itensPedido = itensPedido;
+    this.orderId = orderId;
     this.precoTotal = precoTotal;
+    this.codigoPedido = codigoPedido;
+    this.cpfCliente = cpfCliente;
+    this.itensPedido = itensPedido;
     this.situacao = situacao;
   }
 }

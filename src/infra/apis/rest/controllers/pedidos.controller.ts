@@ -10,20 +10,18 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiExcludeEndpoint,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { PedidoPresenter } from '../presenters/pedido.presenter';
-import { PedidoDto } from '../dtos/pedido.dto';
 import { UseCaseProxy } from '../../../usecases-proxy/use-case-proxy';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
 import { UseCasesProxyModule } from '../../../usecases-proxy/use-cases-proxy.module';
-import { ProdutosUseCases } from '../../../../usecases/produtos.use.cases';
-import { Produto } from '../../../../domain/model/produto';
-import { ItemPedido } from '../../../../domain/model/item-pedido';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
+import { PedidoDto } from '../dtos/pedido.dto';
 
 @ApiTags('Pedidos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
@@ -33,9 +31,15 @@ export class PedidosController {
   constructor(
     @Inject(UseCasesProxyModule.PEDIDO_USECASES_PROXY)
     private pedidoUseCasesUseCaseProxy: UseCaseProxy<PedidoUseCases>,
-    @Inject(UseCasesProxyModule.PRODUTO_USECASES_PROXY)
-    private produtosUseCasesUseCaseProxy: UseCaseProxy<ProdutosUseCases>,
   ) {}
+
+  @ApiExcludeEndpoint()
+  @Post('novo')
+  async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
+    await this.pedidoUseCasesUseCaseProxy
+      .getInstance()
+      .addPedido(pedidoDto.toPedido());
+  }
 
   @ApiOperation({
     summary: 'Listagem de pedidos cadastrados',
@@ -55,31 +59,17 @@ export class PedidosController {
   }
 
   @ApiOperation({
-    summary: 'Cria um novo pedido',
-    description:
-      'Faz o cadastro de uma novo pedido e retorna o pedido em caso de sucesso',
+    summary: 'Status do pedido',
+    description: 'Retorna o status de produção do pedido',
   })
   @ApiOkResponse({
     type: PedidoPresenter,
   })
-  @ApiBadRequestResponse({
-    description: 'Dados inválidos ou incorretos',
-  })
-  @Post()
-  async incluir(@Body() pedidoDto: PedidoDto): Promise<PedidoPresenter> {
-    const items = await Promise.all(
-      pedidoDto.itensPedido.map(async (item) => {
-        const produto: Produto = await this.produtosUseCasesUseCaseProxy
-          .getInstance()
-          .getProdutoById(item.produtoId);
-        return new ItemPedido(produto, item.quantidade);
-      }),
-    );
-
+  @Get(':pedidoId')
+  async status(@Param('pedidoId') pedidoId: number): Promise<PedidoPresenter> {
     const pedido = await this.pedidoUseCasesUseCaseProxy
       .getInstance()
-      .addPedido(pedidoDto.clienteCpf, items);
-
+      .getPedidoByOrderId(pedidoId);
     return new PedidoPresenter(pedido);
   }
 

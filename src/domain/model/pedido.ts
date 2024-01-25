@@ -1,84 +1,100 @@
-import { Cliente } from './cliente';
-import { ItemPedido } from './item-pedido';
-import { Situacao } from './situacao';
+import { Status } from './status';
 
 export class Pedido {
   private readonly _id: number | null;
-  private readonly _codigoPedido: number;
-  private readonly _cliente: Cliente;
-  private readonly _itensPedido: Array<ItemPedido>;
-  private _precoTotal: number;
-  private _situacao: Situacao;
-  private readonly _dataHoraCadastro: Date;
+  private readonly _orderId: number;
+  private readonly _precoTotal: number;
+  private _codigoPedido: number;
+  private _cpfCliente: string;
+  private _itensPedido: Record<string, any>;
+  private _situacao: Status;
 
-  public constructor(
+  constructor(orderId: number, precoTotal: number);
+
+  constructor(
+    orderId: number,
+    precoTotal: number,
     codigoPedido: number,
-    cliente: Cliente,
-    itensPedido: Array<ItemPedido>,
+    cpfCliente: string,
+    itensPedido: Record<string, any>,
   );
 
-  public constructor(
+  constructor(
     id: number,
-    codigoPedido: number,
-    cliente: Cliente,
-    itensPedido: Array<ItemPedido>,
+    orderId: number,
     precoTotal: number,
-    situacao: Situacao,
-    dataHoraCadastro: Date,
+    codigoPedido: number,
+    cpfCliente: string,
+    itensPedido: Record<string, any>,
+    situacao: Status,
   );
 
   public constructor(...params: any[]) {
-    if (params.length === 3) {
-      this._codigoPedido = params[0];
-      this._cliente = params[1];
-      this._itensPedido = params[2];
-      this._precoTotal = this.getPrecoTotal(params[2]);
+    if (params.length === 2) {
+      this._orderId = params[0];
+      this._precoTotal = params[1];
+      this._situacao = Status.RECEBIDO;
+      return;
+    }
+    if (params.length === 5) {
+      this._orderId = params[0];
+      this._precoTotal = params[1];
+      this._codigoPedido = params[2];
+      this._cpfCliente = params[3];
+      this._itensPedido = params[4];
+      this._situacao = Status.RECEBIDO;
       return;
     }
     this._id = params[0];
-    this._codigoPedido = params[1];
-    this._cliente = params[2];
-    this._itensPedido = params[3];
-    this._precoTotal = params[4];
-    this._situacao = params[5];
-    this._dataHoraCadastro = params[6];
+    this._orderId = params[1];
+    this._precoTotal = params[2];
+    this._codigoPedido = params[3];
+    this._cpfCliente = params[4];
+    this._itensPedido = params[5];
+    this._situacao = params[6];
   }
 
   get id(): number | null {
     return this._id;
   }
 
-  get codigoPedido(): number {
-    return this._codigoPedido;
-  }
-
-  get cliente(): Cliente {
-    return this._cliente;
-  }
-
-  get itensPedido(): Array<ItemPedido> {
-    return this._itensPedido;
+  get orderId(): number {
+    return this._orderId;
   }
 
   get precoTotal(): number {
     return this._precoTotal;
   }
 
-  get situacao(): Situacao {
+  get codigoPedido(): number {
+    return this._codigoPedido;
+  }
+
+  set codigoPedido(value: number) {
+    this._codigoPedido = value;
+  }
+
+  get cpfCliente(): string {
+    return this._cpfCliente;
+  }
+
+  set cpfCliente(value: string) {
+    this._cpfCliente = value;
+  }
+
+  get itensPedido(): Record<string, any> {
+    return this._itensPedido;
+  }
+
+  set itensPedido(value: Record<string, any>) {
+    this._itensPedido = value;
+  }
+
+  get situacao(): Status {
     return this._situacao;
   }
 
-  set situacao(situacao: Situacao) {
-    this._situacao = situacao;
-  }
-
-  get dataHoraCadastro(): Date {
-    return this._dataHoraCadastro;
-  }
-
-  private getPrecoTotal(itensPedido: Array<ItemPedido>): number {
-    return itensPedido.reduce((valor, item) => {
-      return valor + item.preco;
-    }, 0);
+  set situacao(value: Status) {
+    this._situacao = value;
   }
 }

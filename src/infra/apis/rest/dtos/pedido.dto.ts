@@ -1,16 +1,12 @@
-import { ArrayNotEmpty, IsOptional, Matches } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { ItemPedidoDto } from './item-pedido.dto';
+import { Pedido } from '../../../../domain/model/pedido';
 
 export class PedidoDto {
-  @ApiProperty()
-  @IsOptional()
-  @Matches(/\d{3}\.\d{3}\.\d{3}-\d{2}/gm, {
-    message: 'Formato de CPF inválido. Use o formato 123.456.789-00',
-  })
-  clienteCpf: string;
+  readonly pagamentoId: string;
+  readonly pedidoId: number;
+  readonly valorTotal: number;
+  readonly status: string;
 
-  @ApiProperty({ isArray: true, type: ItemPedidoDto })
-  @ArrayNotEmpty({ message: 'Lista de Itens do pedido inválida!' })
-  itensPedido: Array<ItemPedidoDto>;
+  toPedido(): Pedido {
+    return new Pedido(this.pedidoId, this.valorTotal);
+  }
 }

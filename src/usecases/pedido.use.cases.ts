@@ -1,19 +1,13 @@
 import { PedidoRepository } from '../domain/repositories/pedido.repository';
 import { Pedido } from '../domain/model/pedido';
-import { Situacao } from '../domain/model/situacao';
+import { Status } from '../domain/model/status';
 import { NotFoundException } from '../domain/exceptions/not-found.exception';
-import { ItemPedido } from '../domain/model/item-pedido';
-import { ClienteRepository } from '../domain/repositories/cliente.repository';
-import { Inject } from '@nestjs/common';
-import { UseCasesProxyModule } from '../infra/usecases-proxy/use-cases-proxy.module';
-import { UseCaseProxy } from '../infra/usecases-proxy/use-case-proxy';
-import { ClienteUseCases } from './cliente.use.cases';
+import { OrderService } from '../domain/services/order.service';
 
 export class PedidoUseCases {
   constructor(
     private readonly pedidoRepository: PedidoRepository,
-    // private readonly clienteRepository: ClienteRepository,
-    private clienteUseCases: ClienteUseCases,
+    private readonly orderService: OrderService,
   ) {}
 
   async getAllPedidos(): Promise<Array<Pedido>> {
@@ -29,9 +23,9 @@ export class PedidoUseCases {
       })
       .sort((a, b) => {
         const ordemSituacao = [
-          Situacao.PRONTO,
-          Situacao.EM_PREPARACAO,
-          Situacao.RECEBIDO,
+          Status.PRONTO,
+          Status.EM_PREPARACAO,
+          Status.RECEBIDO,
         ];
 
         return (
@@ -40,8 +34,8 @@ export class PedidoUseCases {
       });
   }
 
-  async getPedidoById(id: number): Promise<Pedido> {
-    const pedido = await this.pedidoRepository.findById(id);
+  async getPedidoByOrderId(orderId: number): Promise<Pedido> {
+    const pedido = await this.pedidoRepository.findByOrderId(orderId);
 
     if (pedido === null) {
       throw new NotFoundException('Id do pedido não existe!');
@@ -50,32 +44,14 @@ export class PedidoUseCases {
     return pedido;
   }
 
-  async getNextCodigo(): Promise<number> {
-    const lastPedido = await this.pedidoRepository.findLastCodigo();
-    if (lastPedido === null) {
-      return 1;
-    }
-    return lastPedido + 1;
-  }
-
-  async addPedido(
-    clienteCpf: string,
-    items: Array<ItemPedido>,
-  ): Promise<Pedido> {
-    let cliente = null;
-    if (clienteCpf !== '' && clienteCpf !== null && clienteCpf !== undefined) {
-      cliente = await this.clienteUseCases.getClienteByCpf(clienteCpf);
-    }
-
-    const nextCodigo = await this.getNextCodigo();
-
-    const pedido = new Pedido(nextCodigo, cliente, items);
-    return await this.pedidoRepository.insert(pedido);
-  }
-
-  async updateStatusPedido(pedidoId: number, situacao: Situacao) {
-    const pedido = await this.getPedidoById(pedidoId);
+  async updateStatusPedido(pedidoId: number, situacao: Status) {
+    const pedido = await this.getPedidoByOrderId(pedidoId);
     pedido.situacao = situacao;
     await this.pedidoRepository.update(pedidoId, pedido);
+  }
+
+  async addPedido(pedido: Pedido): Promise<Pedido> {
+    const pedidoCompleto = await this.orderService.getFullOrder(pedido.orderId);
+    return await this.pedidoRepository.insert(pedidoCompleto);
   }
 }

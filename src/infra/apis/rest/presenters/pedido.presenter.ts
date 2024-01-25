@@ -1,8 +1,6 @@
-import { Situacao } from '../../../../domain/model/situacao';
+import { Status } from '../../../../domain/model/status';
 import { ApiProperty } from '@nestjs/swagger';
 import { Pedido } from '../../../../domain/model/pedido';
-import { PedidoClientePresenter } from './pedido-cliente.presenter';
-import { ItemPedidoPresenter } from './item-pedido.presenter';
 
 export class PedidoPresenter {
   @ApiProperty()
@@ -12,32 +10,23 @@ export class PedidoPresenter {
   readonly codigoPedido: number;
 
   @ApiProperty()
-  readonly cliente: PedidoClientePresenter;
-
-  @ApiProperty()
-  readonly itensPedido: Array<ItemPedidoPresenter>;
+  readonly cpfCliente: string;
 
   @ApiProperty()
   readonly precoTotal: number;
 
   @ApiProperty()
-  readonly situacao: Situacao;
+  readonly situacao: Status;
 
   @ApiProperty()
-  readonly dataHoraCadastro: Date;
+  readonly itensPedido: Record<string, any>;
 
   public constructor(pedido: Pedido) {
-    this.id = pedido.id;
+    this.id = pedido.orderId;
     this.codigoPedido = pedido.codigoPedido;
-    this.cliente =
-      pedido.cliente === null || pedido.cliente === undefined
-        ? null
-        : new PedidoClientePresenter(pedido.cliente);
-    this.itensPedido = pedido.itensPedido.map(
-      (item) => new ItemPedidoPresenter(item),
-    );
-    this.precoTotal = pedido.precoTotal / 100;
+    this.cpfCliente = pedido.cpfCliente;
+    this.precoTotal = pedido.precoTotal;
     this.situacao = pedido.situacao;
-    this.dataHoraCadastro = pedido.dataHoraCadastro;
+    this.itensPedido = pedido.itensPedido;
   }
 }
