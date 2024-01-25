@@ -1,4 +1,4 @@
-import { Situacao } from '../../domain/model/situacao';
+import { Status } from '../../domain/model/status';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'pedidos' })
@@ -14,12 +14,12 @@ export class PedidoEntity {
 
   @Column({
     type: 'enum',
-    enum: Situacao,
-    default: Situacao.RECEBIDO,
+    enum: Status,
+    default: Status.RECEBIDO,
   })
-  situacao: Situacao;
+  situacao: Status;
 
-  constructor(orderId: number, precoTotal: number, situacao: Situacao) {
+  constructor(orderId: number, precoTotal: number, situacao: Status) {
     this.orderId = orderId;
     this.precoTotal = precoTotal;
     this.situacao = situacao;

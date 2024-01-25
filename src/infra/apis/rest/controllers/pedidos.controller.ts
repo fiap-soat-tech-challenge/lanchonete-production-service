@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -26,7 +34,9 @@ export class PedidosController {
 
   @Post('novo')
   async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
-    console.log(pedidoDto);
+    await this.pedidoUseCasesUseCaseProxy
+      .getInstance()
+      .addPedido(pedidoDto.toPedido());
   }
 
   @ApiOperation({

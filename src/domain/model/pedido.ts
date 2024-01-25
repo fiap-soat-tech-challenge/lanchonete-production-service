@@ -1,10 +1,10 @@
-import { Situacao } from './situacao';
+import { Status } from './status';
 
 export class Pedido {
   private readonly _id: number | null;
   private readonly _orderId: number;
   private readonly _precoTotal: number;
-  private _situacao: Situacao;
+  private _situacao: Status;
 
   constructor(orderId: number, precoTotal: number);
 
@@ -12,14 +12,14 @@ export class Pedido {
     id: number,
     orderId: number,
     precoTotal: number,
-    situacao: Situacao,
+    situacao: Status,
   );
 
   public constructor(...params: any[]) {
     if (params.length === 2) {
       this._orderId = params[0];
       this._precoTotal = params[1];
-      this._situacao = Situacao.RECEBIDO;
+      this._situacao = Status.RECEBIDO;
       return;
     }
     this._id = params[0];
@@ -40,11 +40,11 @@ export class Pedido {
     return this._precoTotal;
   }
 
-  get situacao(): Situacao {
+  get situacao(): Status {
     return this._situacao;
   }
 
-  set situacao(value: Situacao) {
+  set situacao(value: Status) {
     this._situacao = value;
   }
 }

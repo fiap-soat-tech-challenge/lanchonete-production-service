@@ -1,6 +1,6 @@
 import { PedidoRepository } from '../domain/repositories/pedido.repository';
 import { Pedido } from '../domain/model/pedido';
-import { Situacao } from '../domain/model/situacao';
+import { Status } from '../domain/model/status';
 import { NotFoundException } from '../domain/exceptions/not-found.exception';
 
 export class PedidoUseCases {
@@ -19,9 +19,9 @@ export class PedidoUseCases {
       })
       .sort((a, b) => {
         const ordemSituacao = [
-          Situacao.PRONTO,
-          Situacao.EM_PREPARACAO,
-          Situacao.RECEBIDO,
+          Status.PRONTO,
+          Status.EM_PREPARACAO,
+          Status.RECEBIDO,
         ];
 
         return (
@@ -40,9 +40,13 @@ export class PedidoUseCases {
     return pedido;
   }
 
-  async updateStatusPedido(pedidoId: number, situacao: Situacao) {
+  async updateStatusPedido(pedidoId: number, situacao: Status) {
     const pedido = await this.getPedidoById(pedidoId);
     pedido.situacao = situacao;
     await this.pedidoRepository.update(pedidoId, pedido);
+  }
+
+  async addPedido(pedido: Pedido): Promise<Pedido> {
+    return await this.pedidoRepository.insert(pedido);
   }
 }
