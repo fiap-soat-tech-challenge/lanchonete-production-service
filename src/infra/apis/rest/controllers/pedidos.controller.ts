@@ -10,6 +10,7 @@ import {
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiExcludeEndpoint,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
@@ -32,6 +33,7 @@ export class PedidosController {
     private pedidoUseCasesUseCaseProxy: UseCaseProxy<PedidoUseCases>,
   ) {}
 
+  @ApiExcludeEndpoint()
   @Post('novo')
   async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
     await this.pedidoUseCasesUseCaseProxy
@@ -64,16 +66,11 @@ export class PedidosController {
     type: PedidoPresenter,
   })
   @Get(':pedidoId')
-  async status(
-    @Param('pedidoId') pedidoId: number,
-  ): Promise<Array<PedidoPresenter>> {
-    console.log(pedidoId);
-    return null;
-    // const allPedidosSorted = await this.pedidoUseCasesUseCaseProxy
-    //   .getInstance()
-    //   .getAllPedidosSorted();
-    //
-    // return allPedidosSorted.map((pedido) => new PedidoDto(pedido));
+  async status(@Param('pedidoId') pedidoId: number): Promise<PedidoPresenter> {
+    const pedido = await this.pedidoUseCasesUseCaseProxy
+      .getInstance()
+      .getPedidoByOrderId(pedidoId);
+    return new PedidoPresenter(pedido);
   }
 
   @ApiOperation({

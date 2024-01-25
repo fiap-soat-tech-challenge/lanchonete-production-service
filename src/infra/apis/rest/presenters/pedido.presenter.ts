@@ -14,7 +14,7 @@ export class PedidoPresenter {
 
   public constructor(pedido: Pedido) {
     this.pedidoId = pedido.id;
-    this.precoTotal = pedido.precoTotal / 100;
+    this.precoTotal = pedido.precoTotal;
     this.situacao = pedido.situacao;
   }
 }

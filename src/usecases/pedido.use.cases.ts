@@ -30,8 +30,8 @@ export class PedidoUseCases {
       });
   }
 
-  async getPedidoById(id: number): Promise<Pedido> {
-    const pedido = await this.pedidoRepository.findById(id);
+  async getPedidoByOrderId(orderId: number): Promise<Pedido> {
+    const pedido = await this.pedidoRepository.findByOrderId(orderId);
 
     if (pedido === null) {
       throw new NotFoundException('Id do pedido não existe!');
@@ -41,7 +41,7 @@ export class PedidoUseCases {
   }
 
   async updateStatusPedido(pedidoId: number, situacao: Status) {
-    const pedido = await this.getPedidoById(pedidoId);
+    const pedido = await this.getPedidoByOrderId(pedidoId);
     pedido.situacao = situacao;
     await this.pedidoRepository.update(pedidoId, pedido);
   }
