@@ -7,6 +7,9 @@ export class PedidoConverter {
       pedidoEntity.id,
       pedidoEntity.orderId,
       pedidoEntity.precoTotal,
+      pedidoEntity.codigoPedido,
+      pedidoEntity.cpfCliente,
+      pedidoEntity.itensPedido,
       pedidoEntity.situacao,
     );
   }
@@ -15,6 +18,9 @@ export class PedidoConverter {
     const pedidoEntity = new PedidoEntity(
       pedido.orderId,
       pedido.precoTotal,
+      pedido.codigoPedido,
+      pedido.cpfCliente,
+      pedido.itensPedido,
       pedido.situacao,
     );
 

@@ -3,9 +3,11 @@ import { RepositoriesModule } from '../repositories/repositories.module';
 import { UseCaseProxy } from './use-case-proxy';
 import { PedidoRepositoryImpl } from '../repositories/pedido.repository.impl';
 import { PedidoUseCases } from '../../usecases/pedido.use.cases';
+import { ServicesModule } from '../services/services.module';
+import { OrderServiceImpl } from '../services/order.service.impl';
 
 @Module({
-  imports: [RepositoriesModule],
+  imports: [RepositoriesModule, ServicesModule],
 })
 export class UseCasesProxyModule {
   static PEDIDO_USECASES_PROXY = 'pedidoUseCasesProxy';
@@ -15,10 +17,15 @@ export class UseCasesProxyModule {
       module: UseCasesProxyModule,
       providers: [
         {
-          inject: [PedidoRepositoryImpl],
+          inject: [PedidoRepositoryImpl, OrderServiceImpl],
           provide: UseCasesProxyModule.PEDIDO_USECASES_PROXY,
-          useFactory: (pedidoRepository: PedidoRepositoryImpl) =>
-            new UseCaseProxy(new PedidoUseCases(pedidoRepository)),
+          useFactory: (
+            pedidoRepository: PedidoRepositoryImpl,
+            orderService: OrderServiceImpl,
+          ) =>
+            new UseCaseProxy(
+              new PedidoUseCases(pedidoRepository, orderService),
+            ),
         },
       ],
       exports: [UseCasesProxyModule.PEDIDO_USECASES_PROXY],

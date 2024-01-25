@@ -2,9 +2,13 @@ import { PedidoRepository } from '../domain/repositories/pedido.repository';
 import { Pedido } from '../domain/model/pedido';
 import { Status } from '../domain/model/status';
 import { NotFoundException } from '../domain/exceptions/not-found.exception';
+import { OrderService } from '../domain/services/order.service';
 
 export class PedidoUseCases {
-  constructor(private readonly pedidoRepository: PedidoRepository) {}
+  constructor(
+    private readonly pedidoRepository: PedidoRepository,
+    private readonly orderService: OrderService,
+  ) {}
 
   async getAllPedidos(): Promise<Array<Pedido>> {
     return await this.pedidoRepository.findAll();
@@ -47,6 +51,7 @@ export class PedidoUseCases {
   }
 
   async addPedido(pedido: Pedido): Promise<Pedido> {
-    return await this.pedidoRepository.insert(pedido);
+    const pedidoCompleto = await this.orderService.getFullOrder(pedido.orderId);
+    return await this.pedidoRepository.insert(pedidoCompleto);
   }
 }
