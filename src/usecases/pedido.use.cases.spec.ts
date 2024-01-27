@@ -47,6 +47,15 @@ describe('PedidoUseCases', () => {
         { item1: 'value1', item2: 'value2' },
         Status.RECEBIDO,
       ),
+      new Pedido(
+        2,
+        124,
+        60.0,
+        457,
+        '12345678900',
+        { item1: 'value1', item2: 'value2' },
+        Status.PRONTO,
+      ),
     ]);
 
     await pedidoUseCases.getAllPedidosSorted();
