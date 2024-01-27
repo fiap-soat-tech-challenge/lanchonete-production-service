@@ -3,6 +3,7 @@ import { OrderService } from '../domain/services/order.service';
 import { PedidoUseCases } from './pedido.use.cases';
 import { Status } from '../domain/model/status';
 import { Pedido } from '../domain/model/pedido';
+import { NotFoundException } from '../domain/exceptions/not-found.exception';
 
 describe('PedidoUseCases', () => {
   let pedidoRepositoryMock: jest.Mocked<PedidoRepository>;
@@ -72,6 +73,21 @@ describe('PedidoUseCases', () => {
 
     await pedidoUseCases.getPedidoByOrderId(orderId);
 
+    expect(pedidoRepositoryMock.findByOrderId).toHaveBeenCalledWith(orderId);
+  });
+
+  it('should throw NotFoundException when findByOrderId returns null', async () => {
+    const pedidoUseCases = new PedidoUseCases(
+      pedidoRepositoryMock,
+      orderServiceMock,
+    );
+    const orderId = 123;
+
+    pedidoRepositoryMock.findByOrderId.mockResolvedValueOnce(null);
+
+    await expect(
+      pedidoUseCases.getPedidoByOrderId(orderId),
+    ).rejects.toThrowError(NotFoundException);
     expect(pedidoRepositoryMock.findByOrderId).toHaveBeenCalledWith(orderId);
   });
 
