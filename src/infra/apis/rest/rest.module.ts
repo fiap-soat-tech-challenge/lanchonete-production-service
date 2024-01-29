@@ -4,7 +4,7 @@ import { PedidosController } from './controllers/pedidos.controller';
 import { UseCasesProxyModule } from '../../usecases-proxy/use-cases-proxy.module';
 
 @Module({
-  imports: [UseCasesProxyModule.register()],
+  imports: [UseCasesProxyModule],
   providers: [],
   controllers: [
     HomeController,

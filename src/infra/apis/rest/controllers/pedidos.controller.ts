@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -17,9 +9,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PedidoPresenter } from '../presenters/pedido.presenter';
-import { UseCaseProxy } from '../../../usecases-proxy/use-case-proxy';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
-import { UseCasesProxyModule } from '../../../usecases-proxy/use-cases-proxy.module';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
 import { PedidoDto } from '../dtos/pedido.dto';
 
@@ -28,17 +18,12 @@ import { PedidoDto } from '../dtos/pedido.dto';
 @ApiBearerAuth()
 @Controller('/api/pedidos')
 export class PedidosController {
-  constructor(
-    @Inject(UseCasesProxyModule.PEDIDO_USECASES_PROXY)
-    private pedidoUseCasesUseCaseProxy: UseCaseProxy<PedidoUseCases>,
-  ) {}
+  constructor(private pedidoUseCases: PedidoUseCases) {}
 
   @ApiExcludeEndpoint()
   @Post('novo')
   async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
-    await this.pedidoUseCasesUseCaseProxy
-      .getInstance()
-      .addPedido(pedidoDto.toPedido());
+    await this.pedidoUseCases.addPedido(pedidoDto.toPedido());
   }
 
   @ApiOperation({
@@ -51,9 +36,7 @@ export class PedidosController {
   })
   @Get()
   async listar(): Promise<Array<PedidoPresenter>> {
-    const allPedidosSorted = await this.pedidoUseCasesUseCaseProxy
-      .getInstance()
-      .getAllPedidosSorted();
+    const allPedidosSorted = await this.pedidoUseCases.getAllPedidosSorted();
 
     return allPedidosSorted.map((pedido) => new PedidoPresenter(pedido));
   }
@@ -67,9 +50,7 @@ export class PedidosController {
   })
   @Get(':pedidoId')
   async status(@Param('pedidoId') pedidoId: number): Promise<PedidoPresenter> {
-    const pedido = await this.pedidoUseCasesUseCaseProxy
-      .getInstance()
-      .getPedidoByOrderId(pedidoId);
+    const pedido = await this.pedidoUseCases.getPedidoByOrderId(pedidoId);
     return new PedidoPresenter(pedido);
   }
 
@@ -86,8 +67,6 @@ export class PedidosController {
     @Param('pedidoId') pedidoId: number,
     @Body() statusDto: PedidoStatusDto,
   ): Promise<void> {
-    await this.pedidoUseCasesUseCaseProxy
-      .getInstance()
-      .updateStatusPedido(pedidoId, statusDto.status);
+    await this.pedidoUseCases.updateStatusPedido(pedidoId, statusDto.status);
   }
 }
