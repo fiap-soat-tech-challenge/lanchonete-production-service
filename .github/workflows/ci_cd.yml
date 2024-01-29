@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: "lanchonete-production-service"
   ECS_CLUSTER: "lanchonete-cluster"
   ECS_SERVICE: "production-service"
-  ECS_TASK: "production-task"
+  ECS_TASK: "production-service-task"
 
 jobs:
   build:
