@@ -13,7 +13,7 @@ export class PedidoEntity {
   precoTotal: number;
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: Status,
     default: Status.RECEBIDO,
   })

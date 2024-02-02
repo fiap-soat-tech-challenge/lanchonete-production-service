@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
 @Injectable()
-export class DatabaseConfigService implements TypeOrmOptionsFactory {
+export class DatabaseConfig implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
@@ -26,10 +26,10 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
       database: this.configService.get('DB_NAME'),
       schema: this.configService.get('DB_SCHEMA'),
       synchronize: this.boolean(this.configService.get('DB_SYNCHRONIZE')),
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: [__dirname + './../**/*.entity{.ts,.js}'],
       ssl: this.boolean(this.configService.get('DB_SSL')),
       extra: this.getExtra(),
-    };
+    } as TypeOrmModuleOptions;
   }
 
   private boolean(strValue: string): boolean {
