@@ -68,6 +68,30 @@ describe('HttpClientService', () => {
         data: null,
       });
     });
+
+    it('should handle an Error during GET request with response', async () => {
+      const url = 'https://example.com/api/data';
+      const responseData = { error: 'Not Found' };
+
+      const axiosError = {
+        response: {
+          data: responseData,
+          status: 500,
+        },
+      };
+
+      jest.spyOn(axios, 'request').mockRejectedValueOnce(axiosError);
+
+      await expect(async () => {
+        await httpClientService.get(url);
+      }).rejects.toThrowError('Error making HTTP request');
+
+      expect(axios.request).toHaveBeenCalledWith({
+        method: 'GET',
+        url: url,
+        data: null,
+      });
+    });
   });
 
   describe('makeRequest', () => {
