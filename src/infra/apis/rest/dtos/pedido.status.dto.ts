@@ -7,5 +7,5 @@ export class PedidoStatusDto {
     enum: Status,
   })
   @IsEnum(Status, { message: 'O status do pedido não é válido' })
-  readonly status: Status;
+  status: Status;
 }

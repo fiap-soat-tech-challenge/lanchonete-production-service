@@ -14,7 +14,7 @@ export class OrderServiceImpl implements OrderService {
   async getFullOrder(pedidoId: number): Promise<Pedido> {
     const serviceUrl = this.configService.get('ORDER_SERVICE_URL');
     const response = await this.httpClient.get(
-      `${serviceUrl}/api/orders/pedidos/${pedidoId}`,
+      `${serviceUrl}/api/pedidos/${pedidoId}`,
     );
 
     if (response.status !== 200) {
