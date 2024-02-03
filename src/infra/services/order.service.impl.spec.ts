@@ -80,5 +80,53 @@ describe('OrderServiceImpl', () => {
         `${serviceUrl}/api/pedidos/${pedidoId}`,
       );
     });
+
+    it('should throw an error when the response status is not 200', async () => {
+      const pedidoId = 1;
+      const serviceUrl = 'https://orderservice.com';
+
+      jest.spyOn(configService, 'get').mockReturnValue(serviceUrl);
+      jest.spyOn(httpClientService, 'get').mockResolvedValueOnce({
+        status: 500,
+        data: {},
+      } as AxiosResponse);
+
+      await expect(orderService.getFullOrder(pedidoId)).rejects.toThrowError(
+        'Erro ao buscar pedido',
+      );
+
+      expect(configService.get).toHaveBeenCalledWith('ORDER_SERVICE_URL');
+      expect(httpClientService.get).toHaveBeenCalledWith(
+        `${serviceUrl}/api/pedidos/${pedidoId}`,
+      );
+    });
+
+    it('should handle a successful response with missing data fields', async () => {
+      const pedidoId = 1;
+      const serviceUrl = 'https://orderservice.com';
+      const responseData = {};
+
+      jest.spyOn(configService, 'get').mockReturnValue(serviceUrl);
+      jest.spyOn(httpClientService, 'get').mockResolvedValueOnce({
+        status: 200,
+        data: responseData,
+      } as AxiosResponse);
+
+      const result = await orderService.getFullOrder(pedidoId);
+
+      const expectedPedido = new Pedido(
+        pedidoId,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      );
+
+      expect(result).toEqual(expectedPedido);
+      expect(configService.get).toHaveBeenCalledWith('ORDER_SERVICE_URL');
+      expect(httpClientService.get).toHaveBeenCalledWith(
+        `${serviceUrl}/api/pedidos/${pedidoId}`,
+      );
+    });
   });
 });
