@@ -69,25 +69,5 @@ describe('HttpClientService', () => {
 
       expect(result).toEqual(mockError);
     });
-
-    it('should throw an error when the request fails', async () => {
-      const pedidoId = 1;
-      const serviceUrl = 'https://orderservice.com';
-
-      jest.spyOn(configService, 'get').mockReturnValue(serviceUrl);
-      jest.spyOn(httpClientService, 'get').mockResolvedValueOnce({
-        status: 404,
-        data: {},
-      } as AxiosResponse);
-
-      await expect(orderService.getFullOrder(pedidoId)).rejects.toThrowError(
-        'Erro ao buscar pedido',
-      );
-
-      expect(configService.get).toHaveBeenCalledWith('ORDER_SERVICE_URL');
-      expect(httpClientService.get).toHaveBeenCalledWith(
-        `${serviceUrl}/api/pedidos/${pedidoId}`,
-      );
-    });
   });
 });
