@@ -1,19 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpClientService } from './http-client.service';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { OrderServiceImpl } from './order.service.impl';
+import { ConfigService } from '@nestjs/config';
 
 jest.mock('axios');
+jest.mock('@nestjs/config');
 
 describe('HttpClientService', () => {
   let httpClientService: HttpClientService;
+  let orderService: OrderServiceImpl;
+  let configService: ConfigService;
   const mockedAxios = axios as jest.Mocked<typeof axios>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HttpClientService],
+      providers: [HttpClientService, OrderServiceImpl, ConfigService],
     }).compile();
 
     httpClientService = module.get<HttpClientService>(HttpClientService);
+    orderService = module.get<OrderServiceImpl>(OrderServiceImpl);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -61,6 +68,26 @@ describe('HttpClientService', () => {
       const result = await httpClientService.get(url);
 
       expect(result).toEqual(mockError);
+    });
+
+    it('should throw an error when the request fails', async () => {
+      const pedidoId = 1;
+      const serviceUrl = 'https://orderservice.com';
+
+      jest.spyOn(configService, 'get').mockReturnValue(serviceUrl);
+      jest.spyOn(httpClientService, 'get').mockResolvedValueOnce({
+        status: 404,
+        data: {},
+      } as AxiosResponse);
+
+      await expect(orderService.getFullOrder(pedidoId)).rejects.toThrowError(
+        'Erro ao buscar pedido',
+      );
+
+      expect(configService.get).toHaveBeenCalledWith('ORDER_SERVICE_URL');
+      expect(httpClientService.get).toHaveBeenCalledWith(
+        `${serviceUrl}/api/pedidos/${pedidoId}`,
+      );
     });
   });
 });
