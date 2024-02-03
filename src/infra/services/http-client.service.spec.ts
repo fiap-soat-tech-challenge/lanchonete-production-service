@@ -1,26 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpClientService } from './http-client.service';
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { OrderServiceImpl } from './order.service.impl';
-import { ConfigService } from '@nestjs/config';
 
 jest.mock('axios');
-jest.mock('@nestjs/config');
 
 describe('HttpClientService', () => {
   let httpClientService: HttpClientService;
-  let orderService: OrderServiceImpl;
-  let configService: ConfigService;
-  const mockedAxios = axios as jest.Mocked<typeof axios>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [HttpClientService, OrderServiceImpl, ConfigService],
+      providers: [HttpClientService],
     }).compile();
 
     httpClientService = module.get<HttpClientService>(HttpClientService);
-    orderService = module.get<OrderServiceImpl>(OrderServiceImpl);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -28,46 +20,111 @@ describe('HttpClientService', () => {
   });
 
   describe('get', () => {
-    it('should make a GET request successfully', async () => {
-      const mockResponse: AxiosResponse = {
-        data: { result: 'success' },
+    it('should make a successful GET request', async () => {
+      const url = 'https://example.com/api/data';
+      const responseData = { key: 'value' };
+
+      const axiosResponse: AxiosResponse = {
+        data: responseData,
         status: 200,
         statusText: 'OK',
         headers: {},
         config: {} as any,
       };
 
-      mockedAxios.request.mockResolvedValue(mockResponse);
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(axiosResponse);
 
-      const url = 'https://example.com';
       const result = await httpClientService.get(url);
 
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual(axiosResponse);
+      expect(axios.request).toHaveBeenCalledWith({
+        method: 'GET',
+        url: url,
+        data: null,
+      });
     });
 
-    it('should handle an error in GET request', async () => {
-      const mockError: AxiosError = {
+    it('should handle an error during GET request', async () => {
+      const url = 'https://example.com/api/data';
+      const errorMessage = 'Error making HTTP request';
+
+      const axiosError: AxiosError = {
+        message: errorMessage,
         name: 'AxiosError',
-        message: 'Request failed with status code 404',
         config: {} as any,
-        code: '404',
-        response: {
-          status: 404,
-          statusText: 'Not Found',
-          headers: {},
-          config: {} as any,
-          data: {},
-        },
         isAxiosError: true,
         toJSON: jest.fn(),
       };
 
-      mockedAxios.request.mockResolvedValue(mockError);
+      jest.spyOn(axios, 'request').mockRejectedValueOnce(axiosError);
 
-      const url = 'https://example.com';
-      const result = await httpClientService.get(url);
+      await expect(httpClientService.get(url)).rejects.toThrowError(
+        errorMessage,
+      );
 
-      expect(result).toEqual(mockError);
+      expect(axios.request).toHaveBeenCalledWith({
+        method: 'GET',
+        url: url,
+        data: null,
+      });
+    });
+  });
+
+  describe('makeRequest', () => {
+    it('should make a successful request with provided method, url, and data', async () => {
+      const method = 'POST';
+      const url = 'https://example.com/api/data';
+      const requestData = { key: 'value' };
+
+      const axiosResponse: AxiosResponse = {
+        data: requestData,
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config: {} as any,
+      };
+
+      jest.spyOn(axios, 'request').mockResolvedValueOnce(axiosResponse);
+
+      const result = await httpClientService.makeRequest(
+        method,
+        url,
+        requestData,
+      );
+
+      expect(result).toEqual(axiosResponse);
+      expect(axios.request).toHaveBeenCalledWith({
+        method,
+        url,
+        data: requestData,
+      });
+    });
+
+    it('should handle an error during request', async () => {
+      const method = 'PUT';
+      const url = 'https://example.com/api/data';
+      const requestData = { key: 'value' };
+      const errorMessage = 'Error making HTTP request';
+
+      const axiosError: AxiosError = {
+        message: errorMessage,
+        name: 'AxiosError',
+        config: {} as any,
+        isAxiosError: true,
+        toJSON: jest.fn(),
+      };
+
+      jest.spyOn(axios, 'request').mockRejectedValueOnce(axiosError);
+
+      await expect(
+        httpClientService.makeRequest(method, url, requestData),
+      ).rejects.toThrowError(errorMessage);
+
+      expect(axios.request).toHaveBeenCalledWith({
+        method,
+        url,
+        data: requestData,
+      });
     });
   });
 });
