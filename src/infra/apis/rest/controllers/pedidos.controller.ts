@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -16,13 +24,17 @@ import { PedidoDto } from '../dtos/pedido.dto';
 @ApiTags('Pedidos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
 @ApiBearerAuth()
-@Controller('/pedidos')
+@Controller('pedidos')
 export class PedidosController {
+  private readonly logger = new Logger(PedidosController.name);
   constructor(private pedidoUseCases: PedidoUseCases) {}
 
   @ApiExcludeEndpoint()
   @Post('novo')
   async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
+    this.logger.log(
+      `[Novo] Recebendo novo pedido com Id [${pedidoDto.pedidoId}]`,
+    );
     await this.pedidoUseCases.addPedido(pedidoDto.toPedido());
   }
 
