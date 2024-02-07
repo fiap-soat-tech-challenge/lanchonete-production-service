@@ -11,7 +11,7 @@ export class DatabaseConfig implements TypeOrmOptionsFactory {
       return {
         type: 'sqlite',
         database: ':memory:',
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [__dirname + './../**/*.entity{.ts,.js}'],
         synchronize: true,
       };
     }
