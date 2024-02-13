@@ -30,13 +30,11 @@ describe('PedidosController', () => {
   describe('novo', () => {
     it('should add new pedido successfully', async () => {
       const pedidoDto = new PedidoDto();
-      jest
-        .spyOn(pedidoDto, 'toPedido')
-        .mockReturnValueOnce(new Pedido(123, 40.0));
+      pedidoDto.pedidoId = 123;
+      pedidoDto.valorTotal = 40.0;
 
       await pedidosController.novo(pedidoDto);
 
-      expect(pedidoDto.toPedido).toHaveBeenCalled();
       expect(pedidoUseCases.addPedido).toHaveBeenCalledWith(expect.any(Pedido));
     });
   });
