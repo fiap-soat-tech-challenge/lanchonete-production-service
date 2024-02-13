@@ -1,16 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiExcludeEndpoint,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
@@ -19,7 +10,9 @@ import {
 import { PedidoPresenter } from '../presenters/pedido.presenter';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { PedidoDto } from '../dtos/pedido.dto';
+import { Pedido } from '../../../../domain/model/pedido';
 
 @ApiTags('Pedidos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
@@ -29,13 +22,14 @@ export class PedidosController {
   private readonly logger = new Logger(PedidosController.name);
   constructor(private pedidoUseCases: PedidoUseCases) {}
 
-  @ApiExcludeEndpoint()
-  @Post('novo')
-  async novo(@Body() pedidoDto: PedidoDto): Promise<void> {
+  @MessagePattern('approved_payment')
+  async novo(@Payload() pedidoDto: PedidoDto): Promise<void> {
     this.logger.log(
       `[Novo] Recebendo novo pedido com Id [${pedidoDto.pedidoId}]`,
     );
-    await this.pedidoUseCases.addPedido(pedidoDto.toPedido());
+    await this.pedidoUseCases.addPedido(
+      new Pedido(pedidoDto.pedidoId, pedidoDto.valorTotal),
+    );
   }
 
   @ApiOperation({

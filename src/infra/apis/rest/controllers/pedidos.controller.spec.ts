@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PedidosController } from './pedidos.controller';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
-import { PedidoDto } from '../dtos/pedido.dto';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
 import { Pedido } from '../../../../domain/model/pedido';
 import { Status } from '../../../../domain/model/status';
 import { PedidoPresenter } from '../presenters/pedido.presenter';
+import { PedidoDto } from '../dtos/pedido.dto';
 
 jest.mock('../../../../usecases/pedido.use.cases');
 
@@ -30,13 +30,11 @@ describe('PedidosController', () => {
   describe('novo', () => {
     it('should add new pedido successfully', async () => {
       const pedidoDto = new PedidoDto();
-      jest
-        .spyOn(pedidoDto, 'toPedido')
-        .mockReturnValueOnce(new Pedido(123, 40.0));
+      pedidoDto.pedidoId = 123;
+      pedidoDto.valorTotal = 40.0;
 
       await pedidosController.novo(pedidoDto);
 
-      expect(pedidoDto.toPedido).toHaveBeenCalled();
       expect(pedidoUseCases.addPedido).toHaveBeenCalledWith(expect.any(Pedido));
     });
   });
