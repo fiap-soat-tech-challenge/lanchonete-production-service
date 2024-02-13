@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PedidosController } from './pedidos.controller';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
-import { PedidoDto } from '../dtos/pedido.dto';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
 import { Pedido } from '../../../../domain/model/pedido';
 import { Status } from '../../../../domain/model/status';
 import { PedidoPresenter } from '../presenters/pedido.presenter';
+import { PedidoDto } from '../dtos/pedido.dto';
 
 jest.mock('../../../../usecases/pedido.use.cases');
 
