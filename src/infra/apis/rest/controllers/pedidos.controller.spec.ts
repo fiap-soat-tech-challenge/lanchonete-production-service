@@ -5,7 +5,6 @@ import { PedidoStatusDto } from '../dtos/pedido.status.dto';
 import { Pedido } from '../../../../domain/model/pedido';
 import { Status } from '../../../../domain/model/status';
 import { PedidoPresenter } from '../presenters/pedido.presenter';
-import { PedidoDto } from '../dtos/pedido.dto';
 
 jest.mock('../../../../usecases/pedido.use.cases');
 
@@ -25,18 +24,6 @@ describe('PedidosController', () => {
 
   it('should be defined', () => {
     expect(pedidosController).toBeDefined();
-  });
-
-  describe('novo', () => {
-    it('should add new pedido successfully', async () => {
-      const pedidoDto = new PedidoDto();
-      pedidoDto.pedidoId = 123;
-      pedidoDto.valorTotal = 40.0;
-
-      await pedidosController.novo(pedidoDto);
-
-      expect(pedidoUseCases.addPedido).toHaveBeenCalledWith(expect.any(Pedido));
-    });
   });
 
   describe('listar', () => {

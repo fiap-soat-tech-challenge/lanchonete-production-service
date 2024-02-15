@@ -10,9 +10,6 @@ import {
 import { PedidoPresenter } from '../presenters/pedido.presenter';
 import { PedidoUseCases } from '../../../../usecases/pedido.use.cases';
 import { PedidoStatusDto } from '../dtos/pedido.status.dto';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { PedidoDto } from '../dtos/pedido.dto';
-import { Pedido } from '../../../../domain/model/pedido';
 
 @ApiTags('Pedidos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
@@ -21,16 +18,6 @@ import { Pedido } from '../../../../domain/model/pedido';
 export class PedidosController {
   private readonly logger = new Logger(PedidosController.name);
   constructor(private pedidoUseCases: PedidoUseCases) {}
-
-  @MessagePattern('approved_payment')
-  async novo(@Payload() pedidoDto: PedidoDto): Promise<void> {
-    this.logger.log(
-      `[Novo] Recebendo novo pedido com Id [${pedidoDto.pedidoId}]`,
-    );
-    await this.pedidoUseCases.addPedido(
-      new Pedido(pedidoDto.pedidoId, pedidoDto.valorTotal),
-    );
-  }
 
   @ApiOperation({
     summary: 'Listagem de pedidos cadastrados',
