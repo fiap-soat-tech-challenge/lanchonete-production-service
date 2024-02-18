@@ -9,7 +9,7 @@ export class DeleteClienteService {
   @RabbitSubscribe({
     queue: 'delete_cliente_production',
   })
-  public async newOrderHandler(cpf: string): Promise<void> {
+  public async deleteClienteHandler(cpf: string): Promise<void> {
     this.logger.log('[Delete] Deletando CPF do Cliente nos pedidos');
     await this.pedidoUseCases.deleteCpfCliente(cpf);
   }
