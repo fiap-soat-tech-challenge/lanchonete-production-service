@@ -54,4 +54,8 @@ export class PedidoUseCases {
     const pedidoCompleto = await this.orderService.getFullOrder(pedido.orderId);
     return await this.pedidoRepository.insert(pedidoCompleto);
   }
+
+  async deleteCpfCliente(cpf: string): Promise<void> {
+    await this.pedidoRepository.deleteCpfCliente(cpf);
+  }
 }

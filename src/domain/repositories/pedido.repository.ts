@@ -5,4 +5,5 @@ export interface PedidoRepository {
   findByOrderId(orderId: number): Promise<Pedido | null>;
   insert(pedido: Pedido): Promise<Pedido>;
   update(id: number, pedido: Pedido): Promise<void>;
+  deleteCpfCliente(cpf: string): Promise<void>;
 }

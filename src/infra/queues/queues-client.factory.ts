@@ -4,7 +4,7 @@ import { ModuleConfigFactory } from '@golevelup/nestjs-modules/lib/dynamicModule
 import { RabbitMQConfig } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
-export class ApprovedPaymentsFactory
+export class QueuesClientFactory
   implements ModuleConfigFactory<RabbitMQConfig>
 {
   constructor(private configService: ConfigService) {}
@@ -21,6 +21,12 @@ export class ApprovedPaymentsFactory
       queues: [
         {
           name: 'pagamentos_aprovados',
+          options: {
+            durable: true,
+          },
+        },
+        {
+          name: 'delete_cliente_production',
           options: {
             durable: true,
           },

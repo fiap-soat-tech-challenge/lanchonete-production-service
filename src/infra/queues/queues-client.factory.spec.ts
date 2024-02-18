@@ -1,10 +1,10 @@
 import { ConfigService } from '@nestjs/config';
-import { ApprovedPaymentsFactory } from './approved-payments.factory';
+import { QueuesClientFactory } from './queues-client.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { instance, mock, when } from 'ts-mockito';
 
 describe('ApprovedPaymentsFactory', () => {
-  let approvedPaymentsFactory: ApprovedPaymentsFactory;
+  let approvedPaymentsFactory: QueuesClientFactory;
   let configService: ConfigService;
 
   beforeEach(async () => {
@@ -25,13 +25,13 @@ describe('ApprovedPaymentsFactory', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ApprovedPaymentsFactory,
+        QueuesClientFactory,
         { provide: ConfigService, useValue: instance(configService) },
       ],
     }).compile();
 
-    approvedPaymentsFactory = module.get<ApprovedPaymentsFactory>(
-      ApprovedPaymentsFactory,
+    approvedPaymentsFactory = module.get<QueuesClientFactory>(
+      QueuesClientFactory,
     );
   });
 
