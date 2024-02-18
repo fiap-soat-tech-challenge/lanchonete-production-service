@@ -37,4 +37,19 @@ export class PedidoRepositoryImpl implements PedidoRepository {
      */
     await this.pedidoRepository.save(PedidoConverter.toEntity(pedido));
   }
+
+  async deleteCpfCliente(cpf: string): Promise<void> {
+    const pedidosToDeleteCpf = await this.pedidoRepository.find({
+      where: {
+        cpfCliente: cpf,
+      },
+    });
+
+    await Promise.all(
+      pedidosToDeleteCpf.map(async (pedidoEntity) => {
+        pedidoEntity.cpfCliente = null;
+        return await this.pedidoRepository.save(pedidoEntity);
+      }),
+    );
+  }
 }

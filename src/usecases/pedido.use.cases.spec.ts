@@ -8,6 +8,7 @@ import { NotFoundException } from '../domain/exceptions/not-found.exception';
 describe('PedidoUseCases', () => {
   let pedidoRepositoryMock: jest.Mocked<PedidoRepository>;
   let orderServiceMock: jest.Mocked<OrderService>;
+  let pedidoUseCases: PedidoUseCases;
 
   beforeEach(() => {
     pedidoRepositoryMock = {
@@ -15,29 +16,22 @@ describe('PedidoUseCases', () => {
       findByOrderId: jest.fn(),
       insert: jest.fn(),
       update: jest.fn(),
+      deleteCpfCliente: jest.fn(),
     } as jest.Mocked<PedidoRepository>;
 
     orderServiceMock = {
       getFullOrder: jest.fn(),
     } as jest.Mocked<OrderService>;
+
+    pedidoUseCases = new PedidoUseCases(pedidoRepositoryMock, orderServiceMock);
   });
 
   it('should getAllPedidos call repository.findAll', async () => {
-    const pedidoUseCases = new PedidoUseCases(
-      pedidoRepositoryMock,
-      orderServiceMock,
-    );
-
     await pedidoUseCases.getAllPedidos();
-
     expect(pedidoRepositoryMock.findAll).toHaveBeenCalled();
   });
 
   it('should getAllPedidosSorted call repository.findAll', async () => {
-    const pedidoUseCases = new PedidoUseCases(
-      pedidoRepositoryMock,
-      orderServiceMock,
-    );
     pedidoRepositoryMock.findAll.mockResolvedValue([
       new Pedido(
         1,
@@ -65,10 +59,6 @@ describe('PedidoUseCases', () => {
   });
 
   it('should getPedidoByOrderId call repository.findByOrderId', async () => {
-    const pedidoUseCases = new PedidoUseCases(
-      pedidoRepositoryMock,
-      orderServiceMock,
-    );
     const orderId = 123;
 
     await pedidoUseCases.getPedidoByOrderId(orderId);
@@ -77,10 +67,6 @@ describe('PedidoUseCases', () => {
   });
 
   it('should throw NotFoundException when findByOrderId returns null', async () => {
-    const pedidoUseCases = new PedidoUseCases(
-      pedidoRepositoryMock,
-      orderServiceMock,
-    );
     const orderId = 123;
 
     pedidoRepositoryMock.findByOrderId.mockResolvedValueOnce(null);
@@ -92,10 +78,6 @@ describe('PedidoUseCases', () => {
   });
 
   it('should updateStatusPedido call repository.update', async () => {
-    const pedidoUseCases = new PedidoUseCases(
-      pedidoRepositoryMock,
-      orderServiceMock,
-    );
     const pedidoId = 123;
     const situacao = Status.PRONTO;
 
@@ -120,10 +102,6 @@ describe('PedidoUseCases', () => {
   });
 
   it('should addPedido call orderService.getFullOrder and repository.insert', async () => {
-    const pedidoUseCases = new PedidoUseCases(
-      pedidoRepositoryMock,
-      orderServiceMock,
-    );
     const pedido = new Pedido(
       1,
       123,
@@ -140,5 +118,13 @@ describe('PedidoUseCases', () => {
 
     expect(orderServiceMock.getFullOrder).toHaveBeenCalledWith(pedido.orderId);
     expect(pedidoRepositoryMock.insert).toHaveBeenCalledWith(pedido);
+  });
+
+  it('should delete cpfCliente', async () => {
+    const cpf = '12345678900';
+
+    await pedidoUseCases.deleteCpfCliente(cpf);
+
+    expect(pedidoRepositoryMock.deleteCpfCliente).toHaveBeenCalledWith(cpf);
   });
 });

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { ApprovedPaymentsFactory } from './approved-payments.factory';
+import { QueuesClientFactory } from './queues-client.factory';
 
 @Module({
   imports: [
     RabbitMQModule.forRootAsync(RabbitMQModule, {
-      useClass: ApprovedPaymentsFactory,
+      useClass: QueuesClientFactory,
     }),
     QueuesModule,
   ],
