@@ -16,6 +16,8 @@ describe('PedidoRepositoryImpl', () => {
   };
 
   beforeEach(async () => {
+    jest.resetAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PedidoRepositoryImpl,
@@ -107,6 +109,35 @@ describe('PedidoRepositoryImpl', () => {
 
       expect(mockPedidoEntityRepository.save).toHaveBeenCalledWith(
         mockPedidoEntityToSave,
+      );
+    });
+  });
+
+  describe('deleteCpfCliente', () => {
+    it('should delete cpfCliente from pedidos', async () => {
+      const cpf = '123456789';
+
+      const mockPedidosToDeleteCpf = [
+        new PedidoEntity(1, 20.0, 123, cpf, {}, Status.PRONTO),
+        new PedidoEntity(2, 25.0, 456, cpf, {}, Status.RECEBIDO),
+      ];
+
+      mockPedidoEntityRepository.find.mockResolvedValue(mockPedidosToDeleteCpf);
+      mockPedidoEntityRepository.save.mockResolvedValue(null);
+
+      await pedidoRepository.deleteCpfCliente(cpf);
+
+      expect(mockPedidoEntityRepository.find).toHaveBeenCalledWith({
+        where: {
+          cpfCliente: cpf,
+        },
+      });
+
+      expect(mockPedidoEntityRepository.save).toHaveBeenCalledTimes(2);
+      expect(mockPedidoEntityRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cpfCliente: null,
+        }),
       );
     });
   });
