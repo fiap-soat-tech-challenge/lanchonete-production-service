@@ -15,6 +15,7 @@ describe('PedidoUseCases', () => {
       findByOrderId: jest.fn(),
       insert: jest.fn(),
       update: jest.fn(),
+      deleteCpfCliente: jest.fn(),
     } as jest.Mocked<PedidoRepository>;
 
     orderServiceMock = {

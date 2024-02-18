@@ -52,6 +52,12 @@ describe('ApprovedPaymentsFactory', () => {
             durable: true,
           },
         },
+        {
+          name: 'delete_cliente_production',
+          options: {
+            durable: true,
+          },
+        },
       ],
     });
   });
