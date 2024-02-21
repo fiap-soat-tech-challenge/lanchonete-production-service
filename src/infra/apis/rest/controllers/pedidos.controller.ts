@@ -14,7 +14,7 @@ import { PedidoStatusDto } from '../dtos/pedido.status.dto';
 @ApiTags('Pedidos')
 @ApiResponse({ status: '5XX', description: 'Erro interno do sistema' })
 @ApiBearerAuth()
-@Controller('pedidos')
+@Controller('/api/cozinha/pedidos')
 export class PedidosController {
   private readonly logger = new Logger(PedidosController.name);
   constructor(private pedidoUseCases: PedidoUseCases) {}
